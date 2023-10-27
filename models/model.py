@@ -82,7 +82,7 @@ class Model(nn.Module):
         output = self.extractor(x)
         eca = self.eca(output)
 
-        output += eca
+        output = output + eca
 
         B, C, H, T = eca.shape
 
