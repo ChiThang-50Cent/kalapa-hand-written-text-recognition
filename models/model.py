@@ -20,7 +20,8 @@ class VGG16_FeatureExtractor(nn.Module):
                 for param in layer.parameters():
                     param.requires_grad_(False)
     
-    def forward(self, X):
+    def forward(self, X: torch.Tensor):
+        X = X.type(torch.float)
         out = self.vgg(X)
 
         return out
