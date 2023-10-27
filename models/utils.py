@@ -85,12 +85,12 @@ def all_seed(var_seed):
     random.seed(var_seed)
     torch.manual_seed(var_seed)
 
-class to_binary_transform(object):
-  def __init__(self):
-    super().__init__()
+def convert_img(data, path, save_path):
 
-  def __call__(self, sample):
-    img = sample.permute(1, 2, 0).numpy()
+  for i, (dir, title) in enumerate(data):
+
+    print(i, dir)
+    img = cv.imread(f'{path}/{dir}')
 
     Z = img.reshape((-1,3))
     Z = np.float32(Z)
@@ -98,16 +98,17 @@ class to_binary_transform(object):
     criteria = (cv.TERM_CRITERIA_EPS + 
                 cv.TERM_CRITERIA_MAX_ITER, 
                 10, 1.0)
+    
     _, label, _1=cv.kmeans(Z, 2, None, criteria, 
-                           10, cv.KMEANS_RANDOM_CENTERS)
+                            10, cv.KMEANS_RANDOM_CENTERS)
 
     if np.sum(label) / len(label) < 0.5:
       label = 1 - label
+    
+    label = label.reshape(img.shape[0], img.shape[1], 1)
 
-    labels = label.reshape(1, img.shape[0], img.shape[1])
-
-    return torch.tensor(labels, dtype=torch.float32)
-
+    cv.imwrite(f'{save_path}/{title}.jpg', label)
+  
 if __name__ == '__main__':
 
     data = get_img_name_and_labels(f'{path}{text_path}')

@@ -16,7 +16,7 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument('--path', required=True, help='path to root folder')
 parser.add_argument('--text_path', default='annotations', help='path to dataset')
-parser.add_argument('--img_path', default='images', help='path to dataset')
+parser.add_argument('--img_path', default='Binary', help='path to dataset')
 parser.add_argument('--backbone', default='vgg16', help='path to dataset')
 parser.add_argument('--batch_size', type=int, default=64, help='input batch size')
 parser.add_argument('--imgH', type=int, default=64, help='the height of the input image to network')
@@ -37,8 +37,7 @@ def train(path=opt.path, text_path=opt.text_path, img_path=opt.img_path,
     utils.all_seed(seed)
 
     #Read dataset
-    dataset = datasets.ImageFolders(path, text_path, img_path, 
-                                    transform=datasets.compose)
+    dataset = datasets.ImageFolders(path, img_path, transform=datasets.compose)
     
     train_size = int(0.9*len(dataset))
     valid_size = len(dataset) - train_size
@@ -81,17 +80,18 @@ def train(path=opt.path, text_path=opt.text_path, img_path=opt.img_path,
     
     min_val_loss = None
     
-    print('Start training..')
+    print('Start Training....')
 
     for epoch in range(n_epochs):
 
         total_train_loss = 0
         model.train()
 
-        for img, text in train_loader:
+        print(f'Epoch {epoch + 1}/{n_epochs}')
+        
+        for i, (img, text) in enumerate(train_loader):
             
-            print(f'Epoch {epoch}/{n_epochs + 1}', end=' ')
-
+            if i % 10 == 0: print(f'Step: {i}')
             optimizer.zero_grad()
 
             logits = model(img.to(device))

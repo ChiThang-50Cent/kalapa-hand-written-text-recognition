@@ -1,3 +1,4 @@
+import os
 import torch
 import torchvision
 from torch.utils.data import Dataset
@@ -9,26 +10,22 @@ img_path = 'images'
 path = '../OCR/training_data/'
 
 class ImageFolders(Dataset):
-  def __init__(self, path=path, text=text_path, image=img_path, transform=None):
+  def __init__(self, path=path, img_path=None, transform=None):
     super().__init__()
-    img_path_and_label = utils.get_img_name_and_labels(
-      f'{path}{text}')
-    self.names = img_path_and_label[:,0]
-    self.labels = img_path_and_label[:,-1]
 
+    self.path = f'{path}{img_path}'
+    self.list_img = os.listdir(self.path)
     self.transform = transform
-    self.path = path
-    self.image = image
 
   def __len__(self):
-    return len(self.names)
+    return len(self.list_img)
 
   def __getitem__(self, index):
     img = torchvision.io.read_image(
-      f'{self.path}{self.image}/{self.names[index]}'
+      f'{self.path}/{self.list_img[index]}'
     )
     
-    label = self.labels[index]
+    label = self.list_img[index][:-4]
 
     if self.transform:
       img = self.transform(img)
@@ -36,7 +33,6 @@ class ImageFolders(Dataset):
     return img, label
 
 compose = transforms.Compose([
-  utils.to_binary_transform(),
   transforms.Resize((64, 768)),
   transforms.RandomRotation(3),
   transforms.ElasticTransform(7.0),
