@@ -14,6 +14,11 @@ class VGG16_FeatureExtractor(nn.Module):
                                padding=1, stride=1),
             *list(vgg16.children())[0][1:17]
             )
+        
+        for layer in self.vgg:
+            if not isinstance(layer, nn.MaxPool2d):
+                for param in layer.parameters():
+                    param.requires_grad_(False)
     
     def forward(self, X):
         out = self.vgg(X)
@@ -67,8 +72,8 @@ class Model(nn.Module):
         
         if backbone == 'vgg16':
             self.extractor = VGG16_FeatureExtractor(in_channel=in_channels)
-        with torch.no_grad():
-            b, c, h, w = self.extractor(torch.randn(1, in_channels, imgSize[0], imgSize[1])).shape
+
+        b, c, h, w = self.extractor(torch.randn(1, in_channels, imgSize[0], imgSize[1])).shape
 
         self.eca = ECALayer()
         self.sequential = nn.Sequential(
