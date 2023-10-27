@@ -2,7 +2,7 @@ import torch
 import torchvision
 from torch.utils.data import Dataset
 import torchvision.transforms as transforms
-import utils
+import models.utils as utils
 
 text_path = 'annotations'
 img_path = 'images'
