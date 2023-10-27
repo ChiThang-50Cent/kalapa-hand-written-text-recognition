@@ -81,6 +81,8 @@ def train(path=opt.path, text_path=opt.text_path, img_path=opt.img_path,
     
     min_val_loss = None
     
+    print('Start training..')
+
     for epoch in range(n_epochs):
 
         total_train_loss = 0
