@@ -1,4 +1,6 @@
 import os
+import argparse
+
 import torch
 import torchvision
 import torch.nn as nn
@@ -10,16 +12,31 @@ import models.utils as utils
 import models.datasets as datasets
 import models.model as models
 
-def train(backbone, n_epochs, batch_size, rnn_hidden_dim, lr,
-          model_save_path):
+parser = argparse.ArgumentParser()
+
+parser.add_argument('--path', required=True, help='path to root folder')
+parser.add_argument('--text_path', default='annotations', help='path to dataset')
+parser.add_argument('--img_path', default='images', help='path to dataset')
+parser.add_argument('--backbone', default='vgg16', help='path to dataset')
+parser.add_argument('--batch_size', type=int, default=64, help='input batch size')
+parser.add_argument('--imgH', type=int, default=64, help='the height of the input image to network')
+parser.add_argument('--imgW', type=int, default=768, help='the width of the input image to network')
+parser.add_argument('--hidden_dim', type=int, default=256, help='size of the lstm hidden state')
+parser.add_argument('--n_epoch', type=int, default=100, help='number of epochs to train for')
+parser.add_argument('--lr', type=float, default=0.001, help='learning rate for Critic, not used by adadealta')
+parser.add_argument('--manualSeed', type=int, default=1234, help='reproduce experiemnt')
+parser.add_argument('--model_save_path', default='./', help='reproduce experiemnt')
+
+opt = parser.parse_args()
+
+def train(path=opt.path, text_path=opt.text_path, img_path=opt.img_path, 
+          backbone=opt.backbone, n_epochs=opt.n_epoch, batch_size=opt.batch_size, 
+          rnn_hidden_dim=opt.hidden_dim, lr=opt.lr, imgH=opt.imgH, imgW=opt.imgW,
+          model_save_path=opt.model_save_path, seed = opt.manualSeed):
     
-    utils.all_seed(1234)
+    utils.all_seed(seed)
 
     #Read dataset
-    text_path = 'annotations'
-    img_path = 'images'
-    path = './OCR/training_data/'
-
     dataset = datasets.ImageFolders(path, text_path, img_path, 
                                     transform=datasets.compose)
     
@@ -44,7 +61,9 @@ def train(backbone, n_epochs, batch_size, rnn_hidden_dim, lr,
     weight_decay = 1e-3
     clip_norm = 1
 
-    model = models.Model((64, 768), backbone, 1, rnn_hidden_dim, numChars=len(char2idx))
+    model = models.Model((imgH, imgW), backbone, 1, 
+                         rnn_hidden_dim, numChars=len(char2idx))
+    
     optimizer = optim.Adam(model.parameters(), 
                            lr=lr, 
                            weight_decay=weight_decay)
@@ -60,7 +79,6 @@ def train(backbone, n_epochs, batch_size, rnn_hidden_dim, lr,
         if answer[0].lower() == 'y':
             model.load_state_dict(torch.load(PATH))
     
-
     min_val_loss = None
     
     for epoch in range(n_epochs):
@@ -101,4 +119,5 @@ def train(backbone, n_epochs, batch_size, rnn_hidden_dim, lr,
                 min_val_loss = avg_valid_loss
                 torch.save(model.state_dict(), PATH)
 
-
+if __name__ == '__main__':
+    train()
