@@ -67,8 +67,8 @@ class Model(nn.Module):
         
         if backbone == 'vgg16':
             self.extractor = VGG16_FeatureExtractor(in_channel=in_channels)
-
-        b, c, h, w = self.extractor(torch.randn(1, in_channels, imgSize[0], imgSize[1])).shape
+        with torch.no_grad():
+            b, c, h, w = self.extractor(torch.randn(1, in_channels, imgSize[0], imgSize[1])).shape
 
         self.eca = ECALayer()
         self.sequential = nn.Sequential(
