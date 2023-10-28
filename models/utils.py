@@ -86,10 +86,8 @@ def all_seed(var_seed):
     torch.manual_seed(var_seed)
 
 def convert_img(data, path, save_path):
-
   for i, (dir, title) in enumerate(data):
 
-    print(i, dir)
     img = cv.imread(f'{path}/{dir}')
 
     Z = img.reshape((-1,3))
@@ -107,7 +105,9 @@ def convert_img(data, path, save_path):
     
     label = label.reshape(img.shape[0], img.shape[1], 1)
 
-    cv.imwrite(f'{save_path}/{title}.jpg', label)
+    check = cv.imwrite(f'{save_path}/{i}.jpg', label)
+
+    print(i, dir) if check else print(i, dir, 'Error')
   
 if __name__ == '__main__':
 

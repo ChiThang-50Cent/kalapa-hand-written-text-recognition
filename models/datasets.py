@@ -10,11 +10,12 @@ img_path = 'images'
 path = '../OCR/training_data/'
 
 class ImageFolders(Dataset):
-  def __init__(self, path=path, img_path=None, transform=None):
+  def __init__(self, path=path, img_path=None, text_path=None, transform=None):
     super().__init__()
 
-    self.path = f'{path}{img_path}'
-    self.list_img = os.listdir(self.path)
+    self.img_path = f'{path}{img_path}'
+    self.labels = utils.get_img_name_and_labels(f'{path}{text_path}')[:, -1]
+    self.list_img = os.listdir(f'{path}{img_path}')
     self.transform = transform
 
   def __len__(self):
@@ -22,10 +23,10 @@ class ImageFolders(Dataset):
 
   def __getitem__(self, index):
     img = torchvision.io.read_image(
-      f'{self.path}/{self.list_img[index]}'
+      f'{self.img_path}/{self.list_img[index]}'
     )
     
-    label = self.list_img[index][:-4]
+    label = self.labels[index]
 
     if self.transform:
       img = self.transform(img)
