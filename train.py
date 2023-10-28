@@ -79,7 +79,7 @@ def train(path=opt.path, text_path=opt.text_path, img_path=opt.img_path,
         if answer[0].lower() == 'y':
             model.load_state_dict(torch.load(PATH))
     
-    min_val_loss = None
+    min_val_loss = 100_000
     
     print('Start Training....')
 
@@ -92,7 +92,7 @@ def train(path=opt.path, text_path=opt.text_path, img_path=opt.img_path,
         
         for i, (img, text) in enumerate(train_loader):
             
-            if i % 10 == 0: print(f'Step: {i}')
+            if (i+1) % 5 == 0: print(f'Step: {i}')
             optimizer.zero_grad()
 
             logits = model(img.to(device))
@@ -116,7 +116,7 @@ def train(path=opt.path, text_path=opt.text_path, img_path=opt.img_path,
                 total_valid_loss += loss.item()
 
             avg_valid_loss = total_valid_loss / len(valid_loader)
-            print(f'Avg train loss: {total_train_loss/len(train_loader)}', end=' ')
+            print(f'Avg valid loss: {total_valid_loss/len(valid_loader)}')
 
             if min_val_loss < avg_valid_loss:
                 min_val_loss = avg_valid_loss
