@@ -26,13 +26,15 @@ parser.add_argument('--n_epoch', type=int, default=30, help='number of epochs to
 parser.add_argument('--lr', type=float, default=0.01, help='learning rate for Critic, not used by adadealta')
 parser.add_argument('--manualSeed', type=int, default=1234, help='reproduce experiemnt')
 parser.add_argument('--model_save_path', default='/content', help='reproduce experiemnt')
+parser.add_argument('--milestone', nargs='+', type=int, help='milestone')
 
 opt = parser.parse_args()
 
 def train(path=opt.path, text_path=opt.text_path, img_path=opt.img_path, 
           backbone=opt.backbone, n_epochs=opt.n_epoch, batch_size=opt.batch_size, 
           rnn_hidden_dim=opt.hidden_dim, lr=opt.lr, imgH=opt.imgH, imgW=opt.imgW,
-          model_save_path=opt.model_save_path, seed = opt.manualSeed):
+          model_save_path=opt.model_save_path, seed = opt.manualSeed, 
+          milestone=opt.milestone):
     
     utils.all_seed(seed)
 
@@ -69,7 +71,7 @@ def train(path=opt.path, text_path=opt.text_path, img_path=opt.img_path,
                            weight_decay=weight_decay)
     
     scheduler = optim.lr_scheduler.MultiStepLR(optimizer, 
-                                               milestones=[20, 40, 70], gamma=0.1)
+                                               milestones=milestone, gamma=0.1)
 
     loss_fn = nn.CTCLoss()
     model.to(device)
