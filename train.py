@@ -25,7 +25,7 @@ parser.add_argument('--hidden_dim', type=int, default=256, help='size of the lst
 parser.add_argument('--n_epoch', type=int, default=100, help='number of epochs to train for')
 parser.add_argument('--lr', type=float, default=0.001, help='learning rate for Critic, not used by adadealta')
 parser.add_argument('--manualSeed', type=int, default=1234, help='reproduce experiemnt')
-parser.add_argument('--model_save_path', default='./', help='reproduce experiemnt')
+parser.add_argument('--model_save_path', default='/content', help='reproduce experiemnt')
 
 opt = parser.parse_args()
 
@@ -88,11 +88,11 @@ def train(path=opt.path, text_path=opt.text_path, img_path=opt.img_path,
         total_train_loss = 0
         model.train()
 
-        print(f'Epoch {epoch + 1}/{n_epochs}')
+        print(f'Epoch {epoch + 1}/{n_epochs}. Step', end=': ')
         
         for i, (img, text) in enumerate(train_loader):
             
-            if (i+1) % 5 == 0: print(f'Step: {i}')
+            if i % 5 == 0: print(f'{i}', end=', ')
             optimizer.zero_grad()
 
             logits = model(img.to(device))
@@ -103,7 +103,7 @@ def train(path=opt.path, text_path=opt.text_path, img_path=opt.img_path,
             nn.utils.clip_grad_norm_(model.parameters(), clip_norm)
             optimizer.step()
 
-        print(f'Avg train loss: {total_train_loss/len(train_loader)}', end=' ')
+        print(f'Avg train loss: {total_train_loss/len(train_loader):.5f}', end=' ')
 
         model.eval()
 
@@ -116,7 +116,7 @@ def train(path=opt.path, text_path=opt.text_path, img_path=opt.img_path,
                 total_valid_loss += loss.item()
 
             avg_valid_loss = total_valid_loss / len(valid_loader)
-            print(f'Avg valid loss: {total_valid_loss/len(valid_loader)}')
+            print(f'Avg valid loss: {total_valid_loss/len(valid_loader):.5f}')
 
             if min_val_loss < avg_valid_loss:
                 min_val_loss = avg_valid_loss

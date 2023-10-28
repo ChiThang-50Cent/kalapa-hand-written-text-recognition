@@ -15,10 +15,10 @@ class VGG16_FeatureExtractor(nn.Module):
             *list(vgg16.children())[0][1:17]
             )
         
-        for layer in self.vgg:
-            if not isinstance(layer, nn.MaxPool2d):
-                for param in layer.parameters():
-                    param.requires_grad_(False)
+        # for layer in self.vgg:
+        #     if not isinstance(layer, nn.MaxPool2d):
+        #         for param in layer.parameters():
+        #             param.requires_grad_(False)
     
     def forward(self, X: torch.Tensor):
         X = X.type(torch.float)
