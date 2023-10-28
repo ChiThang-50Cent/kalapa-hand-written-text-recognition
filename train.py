@@ -68,7 +68,8 @@ def train(path=opt.path, text_path=opt.text_path, img_path=opt.img_path,
                            lr=lr, 
                            weight_decay=weight_decay)
     
-    scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[10, 30, 70], gamma=0.1)
+    scheduler = optim.lr_scheduler.MultiStepLR(optimizer, 
+                                               milestones=[20, 40, 70], gamma=0.1)
 
     loss_fn = nn.CTCLoss()
     model.to(device)
