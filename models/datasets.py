@@ -14,19 +14,20 @@ class ImageFolders(Dataset):
     super().__init__()
 
     self.img_path = f'{path}{img_path}'
-    self.labels = utils.get_img_name_and_labels(f'{path}{text_path}')[:, -1]
-    self.list_img = os.listdir(f'{path}{img_path}')
+    self.img_labels = utils.get_img_name_and_labels(f'{path}{text_path}')
     self.transform = transform
 
   def __len__(self):
-    return len(self.list_img)
+    return len(self.img_labels)
 
   def __getitem__(self, index):
+    img = str(self.img_labels[index][0]).replace('/', '_')
+
     img = torchvision.io.read_image(
-      f'{self.img_path}/{self.list_img[index]}'
+      f'{self.img_path}/{img}'
     )
     
-    label = self.labels[index]
+    label = self.img_labels[index][1]
 
     if self.transform:
       img = self.transform(img)

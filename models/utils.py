@@ -6,6 +6,7 @@ import cv2 as cv
 
 text_path = 'annotations'
 img_path = 'images'
+binary = 'binary'
 path = '../OCR/training_data/'
 
 def split_to(text: str):
@@ -15,7 +16,7 @@ def split_to(text: str):
 
 def get_img_name_and_labels(text_path):
     data = []
-    annotation_files = os.listdir(text_path)
+    annotation_files = sorted(os.listdir(text_path))
 
     for name in annotation_files:
         if '.txt' in name:
@@ -85,37 +86,32 @@ def all_seed(var_seed):
     random.seed(var_seed)
     torch.manual_seed(var_seed)
 
-def convert_img(data, path, save_path):
-  for i, (dir, title) in enumerate(data):
+def convert_img(data, img_path, save_path):
+    for i, (dir, title) in enumerate(data):
 
-    img = cv.imread(f'{path}/{dir}')
+        img = cv.imread(f'{img_path}/{dir}')
 
-    Z = img.reshape((-1,3))
-    Z = np.float32(Z)
+        Z = img.reshape((-1,3))
+        Z = np.float32(Z)
 
-    criteria = (cv.TERM_CRITERIA_EPS + 
-                cv.TERM_CRITERIA_MAX_ITER, 
-                10, 1.0)
-    
-    _, label, _1=cv.kmeans(Z, 2, None, criteria, 
-                            10, cv.KMEANS_RANDOM_CENTERS)
+        criteria = (cv.TERM_CRITERIA_EPS + 
+                    cv.TERM_CRITERIA_MAX_ITER, 
+                    10, 1.0)
 
-    if np.sum(label) / len(label) < 0.5:
-      label = 1 - label
-    
-    label = label.reshape(img.shape[0], img.shape[1], 1)
+        _, label, _1=cv.kmeans(Z, 2, None, criteria, 
+                                10, cv.KMEANS_RANDOM_CENTERS)
 
-    check = cv.imwrite(f'{save_path}/{i}.jpg', label)
+        if np.sum(label) / len(label) < 0.5:
+            label = 1 - label
 
-    print(i, dir) if check else print(i, dir, 'Error')
-  
+        label = label.reshape(img.shape[0], img.shape[1], 1)
+
+        name = dir.replace('/', '_')
+        check = cv.imwrite(f'{save_path}/{name}.jpg', label)
+
+        print(i, name) if check else print(i, name, 'Error')
+
 if __name__ == '__main__':
 
     data = get_img_name_and_labels(f'{path}{text_path}')
-    list_char = get_all_char(data[:,-1])
-
-    char_2_idx = char2idx(list_char)
-    idx_2_char = idx2char(list_char)
-
-    out = encode_target_batch(['Ấp Cầu Ngang Long Hữu Đông Cần Đước Long An Phan Hoai Nhan Falsc Jpq'], char_2_idx)
-    print(out)
+    
