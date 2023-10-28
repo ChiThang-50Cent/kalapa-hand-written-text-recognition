@@ -40,7 +40,7 @@ def train(path=opt.path, text_path=opt.text_path, img_path=opt.img_path,
     dataset = datasets.ImageFolders(path, img_path, text_path=text_path, 
                                     transform=datasets.compose)
     
-    train_size = int(0.9*len(dataset))
+    train_size = int(0.8 * len(dataset))
     valid_size = len(dataset) - train_size
 
     train_set, valid_set = random_split(dataset, [train_size, valid_size])
@@ -92,7 +92,7 @@ def train(path=opt.path, text_path=opt.text_path, img_path=opt.img_path,
         
         for i, (img, text) in enumerate(train_loader):
             
-            if i % 5 == 0: print(f'{i}', end=', ')
+            if i % 10 == 0: print(f'{i}', end=', ')
             optimizer.zero_grad()
 
             logits = model(img.to(device))
@@ -106,7 +106,6 @@ def train(path=opt.path, text_path=opt.text_path, img_path=opt.img_path,
         print(f'Avg train loss: {total_train_loss/len(train_loader):.5f}', end=' ')
 
         model.eval()
-
         total_valid_loss = 0
 
         with torch.no_grad():
@@ -115,12 +114,12 @@ def train(path=opt.path, text_path=opt.text_path, img_path=opt.img_path,
                 loss = utils.compute_loss(loss_fn, text, logits, device, char2idx)
                 total_valid_loss += loss.item()
 
-            avg_valid_loss = total_valid_loss / len(valid_loader)
-            print(f'Avg valid loss: {total_valid_loss/len(valid_loader):.5f}')
+        avg_valid_loss = total_valid_loss / len(valid_loader)
+        print(f'Avg valid loss: {total_valid_loss/len(valid_loader):.5f}')
 
-            if min_val_loss < avg_valid_loss:
-                min_val_loss = avg_valid_loss
-                torch.save(model.state_dict(), PATH)
+        if min_val_loss < avg_valid_loss:
+            min_val_loss = avg_valid_loss
+            torch.save(model.state_dict(), PATH)
 
 if __name__ == '__main__':
     train()
