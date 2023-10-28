@@ -37,7 +37,8 @@ def train(path=opt.path, text_path=opt.text_path, img_path=opt.img_path,
     utils.all_seed(seed)
 
     #Read dataset
-    dataset = datasets.ImageFolders(path, img_path, transform=datasets.compose)
+    dataset = datasets.ImageFolders(path, img_path, text_path=text_path, 
+                                    transform=datasets.compose)
     
     train_size = int(0.9*len(dataset))
     valid_size = len(dataset) - train_size
