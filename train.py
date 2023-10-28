@@ -22,8 +22,8 @@ parser.add_argument('--batch_size', type=int, default=64, help='input batch size
 parser.add_argument('--imgH', type=int, default=64, help='the height of the input image to network')
 parser.add_argument('--imgW', type=int, default=768, help='the width of the input image to network')
 parser.add_argument('--hidden_dim', type=int, default=256, help='size of the lstm hidden state')
-parser.add_argument('--n_epoch', type=int, default=100, help='number of epochs to train for')
-parser.add_argument('--lr', type=float, default=0.001, help='learning rate for Critic, not used by adadealta')
+parser.add_argument('--n_epoch', type=int, default=30, help='number of epochs to train for')
+parser.add_argument('--lr', type=float, default=0.01, help='learning rate for Critic, not used by adadealta')
 parser.add_argument('--manualSeed', type=int, default=1234, help='reproduce experiemnt')
 parser.add_argument('--model_save_path', default='/content', help='reproduce experiemnt')
 
@@ -68,6 +68,8 @@ def train(path=opt.path, text_path=opt.text_path, img_path=opt.img_path,
                            lr=lr, 
                            weight_decay=weight_decay)
     
+    scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[10, 20], gamma=0.1)
+
     loss_fn = nn.CTCLoss()
     model.to(device)
 
@@ -88,7 +90,7 @@ def train(path=opt.path, text_path=opt.text_path, img_path=opt.img_path,
         total_train_loss = 0
         model.train()
 
-        print(f'Epoch {epoch + 1}/{n_epochs}. Step', end=': ')
+        print(f'Epoch {epoch + 1}/{n_epochs}')
         
         for i, (img, text) in enumerate(train_loader):
             
@@ -115,11 +117,14 @@ def train(path=opt.path, text_path=opt.text_path, img_path=opt.img_path,
                 total_valid_loss += loss.item()
 
         avg_valid_loss = total_valid_loss / len(valid_loader)
-        print(f'Avg valid loss: {total_valid_loss/len(valid_loader):.5f}')
+        print(f'Avg valid loss: {avg_valid_loss:.5f}')
 
-        if min_val_loss < avg_valid_loss:
+        scheduler.step()
+
+        if min_val_loss > avg_valid_loss:
             min_val_loss = avg_valid_loss
             torch.save(model.state_dict(), PATH)
+        
 
 if __name__ == '__main__':
     train()
