@@ -64,11 +64,11 @@ def train(path=opt.path, text_path=opt.text_path, img_path=opt.img_path,
     model = models.Model((imgH, imgW), backbone, 1, 
                          rnn_hidden_dim, numChars=len(char2idx))
     
-    optimizer = optim.Adam(model.parameters(), 
+    optimizer = optim.SGD(model.parameters(), 
                            lr=lr, 
                            weight_decay=weight_decay)
     
-    scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[10, 20], gamma=0.1)
+    scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[10, 30, 70], gamma=0.1)
 
     loss_fn = nn.CTCLoss()
     model.to(device)
@@ -90,11 +90,10 @@ def train(path=opt.path, text_path=opt.text_path, img_path=opt.img_path,
         total_train_loss = 0
         model.train()
 
-        print(f'Epoch {epoch + 1}/{n_epochs}')
+        print(f'Epoch {epoch + 1}/{n_epochs}', end=' ')
         
         for i, (img, text) in enumerate(train_loader):
             
-            if i % 10 == 0: print(f'{i}', end=', ')
             optimizer.zero_grad()
 
             logits = model(img.to(device))
