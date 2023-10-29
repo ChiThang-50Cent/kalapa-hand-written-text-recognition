@@ -37,15 +37,15 @@ def get_all_char(data: np.ndarray):
     return res
 
 def char2idx(list_char: list):
-    c_2_i = {c : i for i, c in enumerate(list_char)}
-    c_2_i[' '] = 197
-    c_2_i['-'] = 198
+    c_2_i = {c : i + 1 for i, c in enumerate(list_char)}
+    c_2_i[' '] = len(c_2_i) + 1
+    c_2_i['-'] = 0
     return c_2_i
 
 def idx2char(list_char: list):
     i_2_c = {i : c for i, c in enumerate(list_char)}
-    i_2_c[197] = ' '
-    i_2_c[198] = '-'
+    i_2_c[len(i_2_c) + 1] = ' '
+    i_2_c[0] = '-'
     return i_2_c
 
 def encode_sentence(sentences: str, char2idx: dict):

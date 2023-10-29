@@ -63,8 +63,10 @@ def train(path=opt.path, text_path=opt.text_path, img_path=opt.img_path,
     weight_decay = 1e-3
     clip_norm = 1
 
-    model = models.Model((imgH, imgW), backbone, 1, 
-                         rnn_hidden_dim, numChars=len(char2idx))
+    # model = models.Model((imgH, imgW), backbone, 1, 
+    #                      rnn_hidden_dim, numChars=len(char2idx))
+    model = models.CRNN(imgH=imgH, nc=1, 
+                        nclass=len(char2idx), nh=rnn_hidden_dim)
     
     optimizer = optim.Adam(model.parameters(), 
                            lr=lr, 
