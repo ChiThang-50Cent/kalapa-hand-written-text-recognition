@@ -155,8 +155,8 @@ class CRNN(nn.Module):
         # conv features
         input = input.type(torch.float)
         conv = self.cnn(input)
-        eca = self.eca(conv)
-        conv = conv + eca
+        # eca = self.eca(conv)
+        # conv = conv + eca
 
         b, c, h, w = conv.size()
         assert h == 1, "the height of conv must be 1"
