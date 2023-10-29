@@ -153,10 +153,11 @@ class CRNN(nn.Module):
 
     def forward(self, input):
         # conv features
+        input = input.type(torch.float)
         conv = self.cnn(input)
         eca = self.eca(output)
         conv = conv + eca
-        
+
         b, c, h, w = conv.size()
         assert h == 1, "the height of conv must be 1"
         
