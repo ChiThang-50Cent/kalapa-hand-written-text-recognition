@@ -155,7 +155,7 @@ class CRNN(nn.Module):
         # conv features
         input = input.type(torch.float)
         conv = self.cnn(input)
-        eca = self.eca(output)
+        eca = self.eca(conv)
         conv = conv + eca
 
         b, c, h, w = conv.size()
