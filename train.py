@@ -93,7 +93,7 @@ def train(path=opt.path, text_path=opt.text_path, img_path=opt.img_path,
         total_train_loss = 0
         model.train()
 
-        print(f'Epoch {epoch + 1}/{n_epochs}', end=' ')
+        print(f'Epoch {epoch + 1}/{n_epochs}')
         
         for i, (img, text) in enumerate(train_loader):
             
