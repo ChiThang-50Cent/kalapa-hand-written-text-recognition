@@ -26,7 +26,7 @@ parser.add_argument('--n_epoch', type=int, default=30, help='number of epochs to
 parser.add_argument('--lr', type=float, default=0.01, help='learning rate for Critic, not used by adadealta')
 parser.add_argument('--manualSeed', type=int, default=1234, help='reproduce experiemnt')
 parser.add_argument('--model_save_path', default='/content', help='reproduce experiemnt')
-parser.add_argument('--milestone', nargs='+', type=int, help='milestone')
+parser.add_argument('--milestone', nargs='+', type=int, default=[10, 30, 70],help='milestone')
 
 opt = parser.parse_args()
 
@@ -66,12 +66,12 @@ def train(path=opt.path, text_path=opt.text_path, img_path=opt.img_path,
     model = models.Model((imgH, imgW), backbone, 1, 
                          rnn_hidden_dim, numChars=len(char2idx))
     
-    optimizer = optim.SGD(model.parameters(), 
+    optimizer = optim.Adam(model.parameters(), 
                            lr=lr, 
                            weight_decay=weight_decay)
     
-    scheduler = optim.lr_scheduler.MultiStepLR(optimizer, 
-                                               milestones=milestone, gamma=0.1)
+    scheduler = optim.lr_scheduler\
+        .MultiStepLR(optimizer, milestones=milestone, gamma=0.1)
 
     loss_fn = nn.CTCLoss()
     model.to(device)
@@ -97,6 +97,8 @@ def train(path=opt.path, text_path=opt.text_path, img_path=opt.img_path,
         
         for i, (img, text) in enumerate(train_loader):
             
+            if i % 10 == 0: print(f'Step {i}')
+
             optimizer.zero_grad()
 
             logits = model(img.to(device))
@@ -119,13 +121,15 @@ def train(path=opt.path, text_path=opt.text_path, img_path=opt.img_path,
                 total_valid_loss += loss.item()
 
         avg_valid_loss = total_valid_loss / len(valid_loader)
-        print(f'Avg valid loss: {avg_valid_loss:.5f}')
+        print(f'Avg valid loss: {avg_valid_loss:.5f}', end=' ')
+        print(f'LR: {scheduler.get_last_lr()[0]:.5f}')
 
         scheduler.step()
 
         if min_val_loss > avg_valid_loss:
             min_val_loss = avg_valid_loss
             torch.save(model.state_dict(), PATH)
+        
         
 
 if __name__ == '__main__':
