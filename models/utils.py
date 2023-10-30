@@ -27,10 +27,10 @@ def get_img_name_and_labels(text_path):
     return np.array(data)
 
 def get_all_char(data: np.ndarray):
-    all_labels = " ".join(data).split(' ')
+    all_labels = "".join(data)
 
-    all_labels_1 = "".join(all_labels).upper()
-    all_labels_2 = "".join(all_labels).lower()
+    all_labels_1 = all_labels.upper()
+    all_labels_2 = all_labels.lower()
 
     res = sorted(list(set(list(all_labels_1 + all_labels_2))))
 
@@ -38,13 +38,11 @@ def get_all_char(data: np.ndarray):
 
 def char2idx(list_char: list):
     c_2_i = {c : i + 1 for i, c in enumerate(list_char)}
-    c_2_i[' '] = len(c_2_i) + 1
     c_2_i['-'] = 0
     return c_2_i
 
 def idx2char(list_char: list):
-    i_2_c = {i : c for i, c in enumerate(list_char)}
-    i_2_c[len(i_2_c) + 1] = ' '
+    i_2_c = {i + 1 : c for i, c in enumerate(list_char)}
     i_2_c[0] = '-'
     return i_2_c
 
@@ -113,5 +111,9 @@ def convert_img(data, img_path, save_path):
 
 if __name__ == '__main__':
 
-    data = get_img_name_and_labels(f'{path}{text_path}')
+    text_batch = ['Một hai ba', 'Mot hai']
+    data = get_all_char(text_batch)
+    c2i = char2idx(data)
+
+    print(encode_target_batch(text_batch, c2i))
     

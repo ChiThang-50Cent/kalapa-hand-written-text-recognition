@@ -72,8 +72,8 @@ def train(path=opt.path, text_path=opt.text_path, img_path=opt.img_path,
                            lr=lr, 
                            weight_decay=weight_decay)
     
-    scheduler = optim.lr_scheduler\
-        .MultiStepLR(optimizer, milestones=milestone, gamma=0.1)
+    # scheduler = optim.lr_scheduler\
+    #     .MultiStepLR(optimizer, milestones=milestone, gamma=0.1)
 
     loss_fn = nn.CTCLoss()
     model.to(device)
@@ -99,13 +99,12 @@ def train(path=opt.path, text_path=opt.text_path, img_path=opt.img_path,
         
         for i, (img, text) in enumerate(train_loader):
             
-            if i % 10 == 0: print(f'Step {i}')
-
             optimizer.zero_grad()
 
             logits = model(img.to(device))
             loss = utils.compute_loss(loss_fn, text, logits, device, char2idx)            
             loss.backward()
+
             total_train_loss += loss.item()
 
             nn.utils.clip_grad_norm_(model.parameters(), clip_norm)
@@ -124,9 +123,9 @@ def train(path=opt.path, text_path=opt.text_path, img_path=opt.img_path,
 
         avg_valid_loss = total_valid_loss / len(valid_loader)
         print(f'Avg valid loss: {avg_valid_loss:.5f}', end=' ')
-        print(f'LR: {scheduler.get_last_lr()[0]:.5f}')
+        # print(f'LR: {scheduler.get_last_lr()[0]:.5f}')
 
-        scheduler.step()
+        # scheduler.step()
 
         if min_val_loss > avg_valid_loss:
             min_val_loss = avg_valid_loss
