@@ -77,10 +77,8 @@ class Model(nn.Module):
 
         self.eca = ECALayer()
         self.sequential = nn.Sequential(
-            nn.Linear(c * h , hidden_dim),
-            BidirectionalLSTM(hidden_dim, hidden_dim, hidden_dim),
-            BidirectionalLSTM(hidden_dim, hidden_dim, hidden_dim),
-            nn.Linear(hidden_dim, numChars)
+            BidirectionalLSTM(c * h, hidden_dim, hidden_dim),
+            BidirectionalLSTM(hidden_dim, hidden_dim, numChars),
         )
     
     def forward(self, x):
@@ -94,7 +92,6 @@ class Model(nn.Module):
         output = output.reshape(B, T, C * H)
         output = self.sequential(output)
 
-        
         output = output.permute(1, 0, 2)
 
         output = torch.nn.functional.log_softmax(output, 2)
@@ -173,8 +170,8 @@ class CRNN(nn.Module):
 
 if __name__ == '__main__':
 
-    # model = Model((64, 768), 'vgg16', 1, 256, 200)
-    model = CRNN(imgH=64, nc=1, nclass=199, nh=256)
+    model = Model((64, 768), 'vgg16', 1, 256, 200)
+    # model = CRNN(imgH=64, nc=1, nclass=199, nh=256)
     out = model(torch.randn(1, 1, 64, 768))
 
     print(out.shape)
