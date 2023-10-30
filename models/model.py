@@ -11,9 +11,9 @@ class VGG16_FeatureExtractor(nn.Module):
             nn.Conv2d(in_channels=in_channel, 
                                out_channels=64, kernel_size=3, 
                                padding=1, stride=1),
-            *list(vgg16.children())[0][1:17]
+            *list(vgg16.children())[0][1:23]
             )
-        
+        self.maxpool = nn.MaxPool2d(kernel_size=(7, 1), stride=(3, 1), padding=(0, 0))
         # for layer in self.vgg:
         #     if not isinstance(layer, nn.MaxPool2d):
         #         for param in layer.parameters():
@@ -22,6 +22,7 @@ class VGG16_FeatureExtractor(nn.Module):
     def forward(self, X: torch.Tensor):
         X = X.type(torch.float)
         out = self.vgg(X)
+        out = self.maxpool(out)
 
         return out
 
