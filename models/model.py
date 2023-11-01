@@ -13,11 +13,8 @@ class VGG16_FeatureExtractor(nn.Module):
                                padding=1, stride=1),
             *list(vgg16.children())[0][1:23]
             )
-        self.maxpool = nn.MaxPool2d(kernel_size=(7, 1), stride=(3, 1), padding=(0, 0))
-        # for layer in self.vgg:
-        #     if not isinstance(layer, nn.MaxPool2d):
-        #         for param in layer.parameters():
-        #             param.requires_grad_(False)
+        self.maxpool = nn.MaxPool2d(kernel_size=(7, 1)
+                                    , stride=(3, 1), padding=(0, 0))
     
     def forward(self, X: torch.Tensor):
         X = X.type(torch.float)
@@ -84,11 +81,11 @@ class Model(nn.Module):
     
     def forward(self, x):
         output = self.extractor(x)
-        eca = self.eca(output)
+        # eca = self.eca(output)
 
-        output = output + eca
+        # output = output + eca
 
-        B, C, H, T = eca.shape
+        B, C, H, T = output.shape
 
         output = output.reshape(B, T, C * H)
         output = self.sequential(output)

@@ -4,6 +4,8 @@ import torch
 import random
 import cv2 as cv
 
+from math import log
+
 text_path = 'annotations'
 img_path = 'images'
 binary = 'binary'
@@ -50,9 +52,40 @@ def encode_sentence(sentences: str, char2idx: dict):
     encoded = [char2idx[s] for s in sentences]
     return encoded
 
-def decode_sentence(sentences: list, idx2char: dict):
-    decoded = [idx2char[s] for s in sentences]
+def decode_sentence(sentences, idx2char: dict, raw = False):
+    if raw:
+        decoded = [idx2char[s] for s in sentences]
+    else:
+        decoded = []
+        for i, num in enumerate(sentences):
+            if num != 0 and (not (i > 0 and sentences[i-1] == sentences[i])):
+                decoded.append(idx2char[num])
+
     return "".join(decoded)
+
+def best_path_decoder(sentences, idx2char: dict):
+    text = np.argmax(sentences, axis=1)
+    return decode_sentence(text, idx2char)
+
+def beam_search_decoder(data, k, idx2char):
+	sequences = [[list(), 0.0]]
+	# walk over each step in sequence
+	for row in data:
+		all_candidates = list()
+		# expand each current candidate
+		for i in range(len(sequences)):
+			seq, score = sequences[i]
+			for j in range(len(row)):
+				candidate = [seq + [j], score - log(row[j])]
+				all_candidates.append(candidate)
+		# order all candidates by score
+		ordered = sorted(all_candidates, key=lambda tup:tup[1])
+		# select k best
+		sequences = ordered[:k]
+
+	text = sequences[-1][0]
+    
+	return decode_sentence(text, idx2char)
 
 def encode_target_batch(target_batch, char2idx):
     
