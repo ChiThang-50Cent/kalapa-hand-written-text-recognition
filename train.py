@@ -140,15 +140,15 @@ def train(root=opt.root, text_path=opt.text_path, img_path=opt.img_path,
 
 if __name__ == '__main__':
 # for binay image 
-# !python -W ignore train.py --path='/kaggle/input/kalapa-handwritten-text-recognition/training_data/' \
+# !python -W ignore train.py --root='/kaggle/input/kalapa-handwritten-text-recognition/training_data/' \
 # --model_save_path='/kaggle/working/' --lr=0.001 --batch_size=64 --n_epoch=60
 
 # for grayscale image 
-# !python -W ignore train.py --path='/kaggle/input/kalapa-handwritten-text-recognition/training_data/' \
+# !python -W ignore train.py --root='/kaggle/input/kalapa-handwritten-text-recognition/training_data/' \
 # --model_save_path='/kaggle/working/' --binary=0 --img_path='images' --lr=0.001 --batch_size=64 --n_epoch=60
 
 # for rgb image 
-# !python -W ignore train.py --path='/kaggle/input/kalapa-handwritten-text-recognition/training_data/' \
+# !python -W ignore train.py --root='/kaggle/input/kalapa-handwritten-text-recognition/training_data/' \
 # --model_save_path='/kaggle/working/' --binary=0 --img_path='images' --lr=0.001 --batch_size=64 \
 # --n_epoch=60 --n_channels=3
     train()
