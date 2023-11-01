@@ -16,15 +16,22 @@ def mapping(data):
     return dict_
 
 def test_model(path, model):
+
 	list_file = sorted(os.listdir(path))
 	res_best_path = []
 	res_beam_search = []
 
-	tf = torchvision.transforms.Resize((64, 768))
+	tf = torchvision.transforms.Compose([
+          torchvision.transforms.Resize((64, 768)),
+		  torchvision.transforms.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5))
+		])
 
 	with torch.no_grad():
 		for x in tqdm(list_file, ascii=True):
-			img = torchvision.io.read_image(f'{path}/{x}')
+			img_path = './OCR/public_test/images/'
+			x = x.replace('_', '/')
+
+			img = torchvision.io.read_image(f'{img_path}{x}').float()
 			img = tf(img)
 			img = torch.unsqueeze(img, 0)
 			out = model(img)
@@ -47,10 +54,10 @@ all_chars = utils.get_all_char(data[:,-1])
 char2idx = utils.char2idx(all_chars)
 idx2char = utils.idx2char(all_chars)
 
-model = models.CRNN(imgH=64,nc=1, nh=256, nclass=len(char2idx))
-model_name = 'crnn_wo_eca'
+model = models.CRNN(imgH=64,nc=3, nh=256, nclass=len(char2idx))
+model_name = 'crnn_3_channels'
 
-model.load_state_dict(torch.load(f'.save_models/{model_name}.pth', map_location=torch.device('cpu')))
+model.load_state_dict(torch.load(f'./save_models/{model_name}.pth', map_location=torch.device('cpu')))
 model.eval()
 
 df1, df2 = test_model('./OCR/public_test/binary', model)
