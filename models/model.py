@@ -97,8 +97,9 @@ class Model(nn.Module):
         return output
 
 class CRNN(nn.Module):
-    def __init__(self, imgH, nc, nclass, nh, leakyRelu=False):
+    def __init__(self, imgH, nc, nclass, nh, ECA=False, leakyRelu=False):
         super(CRNN, self).__init__()
+
         assert imgH % 16 == 0, 'imgH has to be a multiple of 16'
 
         ks = [3, 3, 3, 3, 3, 3, 2]
@@ -107,7 +108,7 @@ class CRNN(nn.Module):
         nm = [64, 128, 256, 256, 512, 512, 512]
         
         self.eca = ECALayer()
-
+        self.useECA = ECA
         cnn = nn.Sequential()
 
         def convRelu(i, batchNormalization=True):
@@ -150,8 +151,10 @@ class CRNN(nn.Module):
         # conv features
         input = input.type(torch.float)
         conv = self.cnn(input)
-        eca = self.eca(conv)
-        conv = conv + eca
+
+        if self.useECA:
+            eca = self.eca(conv)
+            conv = conv + eca
 
         b, c, h, w = conv.size()
         assert h == 1, "the height of conv must be 1"
