@@ -81,9 +81,9 @@ class Model(nn.Module):
     
     def forward(self, x):
         output = self.extractor(x)
-        # eca = self.eca(output)
+        eca = self.eca(output)
 
-        # output = output + eca
+        output = output + eca
 
         B, C, H, T = output.shape
 
