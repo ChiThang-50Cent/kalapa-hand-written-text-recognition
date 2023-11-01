@@ -168,9 +168,9 @@ class CRNN(nn.Module):
 
 if __name__ == '__main__':
 
-    model = Model((64, 768), 'vgg16', 1, 256, 200)
-    # model = CRNN(imgH=64, nc=1, nclass=199, nh=256)
-    out = model(torch.randn(1, 1, 64, 768))
+    # model = Model((64, 768), 'vgg16', 1, 256, 200)
+    model = CRNN(imgH=64, nc=3, nclass=199, nh=256)
+    out = model(torch.randn(1, 3, 64, 768))
 
     print(out.shape)
     # print(model)

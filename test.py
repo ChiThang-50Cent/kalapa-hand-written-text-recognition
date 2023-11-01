@@ -48,10 +48,12 @@ char2idx = utils.char2idx(all_chars)
 idx2char = utils.idx2char(all_chars)
 
 model = models.CRNN(imgH=64,nc=1, nh=256, nclass=len(char2idx))
-model.load_state_dict(torch.load('./crnn.pth', map_location=torch.device('cpu')))
+model_name = 'crnn_wo_eca'
+
+model.load_state_dict(torch.load(f'.save_models/{model_name}.pth', map_location=torch.device('cpu')))
 model.eval()
 
 df1, df2 = test_model('./OCR/public_test/binary', model)
 
-df1.to_csv('./beam_submission.csv', index=False)
-df2.to_csv('./best_submission.csv', index=False)
+df1.to_csv(f'./submission/{model_name}_beam_submission.csv', index=False)
+df2.to_csv(f'./submission/{model_name}_best_submission.csv', index=False)
