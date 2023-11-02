@@ -47,8 +47,8 @@ def compose(n_channels, binary=False):
     transforms.RandomErasing(),
   ]
   if n_channels != 1:
-    transform.append(transforms.Normalize(mean=(0.485, 0.456, 0.406),
-                                           std=(0.229, 0.224, 0.225)))
+    transform.append(transforms.Normalize(mean=(0.5, 0.5, 0.5),
+                                           std=(0.5, 0.5, 0.5)))
   elif not bool(binary):
     transform.insert(1, transforms.Grayscale())
     transform.append(transforms.Normalize(mean=(0.5,),

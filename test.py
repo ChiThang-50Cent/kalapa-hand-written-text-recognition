@@ -23,8 +23,8 @@ def test_model(path, model):
 
 	tf = torchvision.transforms.Compose([
           torchvision.transforms.Resize((64, 768)),
-		  torchvision.transforms.Normalize(mean=(0.485, 0.456, 0.406),
-                                           std=(0.229, 0.224, 0.225))
+		  torchvision.transforms.Normalize(mean=(0.5, 0.5, 0.5),
+                                           std=(0.5, 0.5, 0.5))
 		])
 
 	with torch.no_grad():
