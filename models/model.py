@@ -2,27 +2,6 @@ import torch
 import torch.nn as nn
 import torchvision.models as models
 
-class VGG16_FeatureExtractor(nn.Module):
-    def __init__(self, in_channel):
-        super(VGG16_FeatureExtractor, self).__init__()
-
-        vgg16 = models.vgg16(weights='IMAGENET1K_FEATURES')
-        self.vgg = nn.Sequential(
-            nn.Conv2d(in_channels=in_channel, 
-                               out_channels=64, kernel_size=3, 
-                               padding=1, stride=1),
-            *list(vgg16.children())[0][1:23]
-            )
-        self.maxpool = nn.MaxPool2d(kernel_size=(7, 1)
-                                    , stride=(3, 1), padding=(0, 0))
-    
-    def forward(self, X: torch.Tensor):
-        X = X.type(torch.float)
-        out = self.vgg(X)
-        out = self.maxpool(out)
-
-        return out
-
 class ECALayer(nn.Module):
 
     def __init__(self, k_size=3):
@@ -63,39 +42,7 @@ class BidirectionalLSTM(nn.Module):
         output = output.view(T, b, -1)
 
         return output
-
-class Model(nn.Module):
-    def __init__(self, imgSize, backbone, in_channels, hidden_dim, numChars):
-        super(Model, self).__init__()
         
-        if backbone == 'vgg16':
-            self.extractor = VGG16_FeatureExtractor(in_channel=in_channels)
-
-        b, c, h, w = self.extractor(torch.randn(1, in_channels, imgSize[0], imgSize[1])).shape
-
-        self.eca = ECALayer()
-        self.sequential = nn.Sequential(
-            BidirectionalLSTM(c * h, hidden_dim, hidden_dim),
-            BidirectionalLSTM(hidden_dim, hidden_dim, numChars),
-        )
-    
-    def forward(self, x):
-        output = self.extractor(x)
-        # eca = self.eca(output)
-
-        # output = output + eca
-
-        B, C, H, T = output.shape
-
-        output = output.reshape(B, T, C * H)
-        output = self.sequential(output)
-
-        output = output.permute(1, 0, 2)
-
-        output = torch.nn.functional.log_softmax(output, 2)
-
-        return output
-
 class CRNN(nn.Module):
     def __init__(self, imgH, nc, nclass, nh, attention=None, leakyRelu=False):
         super(CRNN, self).__init__()
@@ -170,7 +117,6 @@ class CRNN(nn.Module):
         output = torch.nn.functional.log_softmax(output, 2)
 
         return output
-
 
 if __name__ == '__main__':
 

@@ -2,7 +2,6 @@ import os
 import argparse
 
 import torch
-import torchvision
 import torch.nn as nn
 import torch.optim as optim
 
@@ -11,6 +10,7 @@ from torch.utils.data import DataLoader, random_split
 import models.utils as utils
 import models.datasets as datasets
 import models.model as models
+import models.base as base_model
 
 parser = argparse.ArgumentParser()
 
@@ -19,7 +19,7 @@ parser.add_argument('--text_path', default='annotations', help='path to dataset'
 parser.add_argument('--img_path', default='binary', help='path to dataset')
 parser.add_argument('--n_channels', type=int, default=1, help='num of in channels')
 parser.add_argument('--binary', type=int, default=1, help='num of in channels')
-parser.add_argument('--backbone', default='vgg16', help='path to dataset')
+parser.add_argument('--backbone', default='resnet50', help='path to dataset')
 parser.add_argument('--batch_size', type=int, default=64, help='input batch size')
 parser.add_argument('--imgH', type=int, default=64, help='the height of the input image to network')
 parser.add_argument('--imgW', type=int, default=768, help='the width of the input image to network')
@@ -67,11 +67,11 @@ def train(root=opt.root, text_path=opt.text_path, img_path=opt.img_path,
     weight_decay = 1e-3
     clip_norm = 1
 
-    # model = models.Model((imgH, imgW), backbone, 1, 
-    #                      rnn_hidden_dim, numChars=len(char2idx))
+    model = base_model.Model((imgH, imgW), backbone, n_channels,rnn_hidden_dim, 
+                         rnn_hidden_dim, numChars=len(char2idx))
 
-    model = models.CRNN(imgH=imgH, nc=n_channels, 
-                        nclass=len(char2idx), nh=rnn_hidden_dim)
+    # model = models.CRNN(imgH=imgH, nc=n_channels, 
+    #                     nclass=len(char2idx), nh=rnn_hidden_dim)
     
     optimizer = optim.Adam(model.parameters(), 
                            lr=lr, 
