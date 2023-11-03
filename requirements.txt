@@ -1,6 +1,0 @@
-opencv
-
-torch==1.13.1
-torchvision==0.14.1
-numpy==1.21.6
-flask==2.2.5
