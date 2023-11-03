@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vietnamese location handwriten text recognition</title>
+</head>
+<body style="padding: 3%;">
+    <h2>Vietnamese location handwritten text recognition</h2>
+    <h3>Tải ảnh lên</h3>
+    <form action="{{ url_for('get_file') }}" enctype="multipart/form-data" method="POST">
+        <input name="img" type="file"/>
+        <input type="submit"/>
+    </form>
+    
+    {% if img %}
+    <img src="{{img}}" style="width: 50%; padding: 3% 0;">
+    <div>
+        <div>
+            <p>Best Path: </p>
+            <h4>{{preds}}</h4>
+        </div>
+        <div>
+            <p>Beam search: </p>
+            <h4>{{preds_beam}}</h4>
+        </div>
+    </div>
+    {% endif %}
+</body>
+</html>
