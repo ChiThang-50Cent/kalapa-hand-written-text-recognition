@@ -12,7 +12,7 @@ class Predictor():
                                            std=(0.5, 0.5, 0.5))
 		])
 
-        data = utils.get_img_name_and_labels('../annotations')
+        data = utils.get_img_name_and_labels('../OCR/training_data/annotations/')
         all_chars = utils.get_all_char(data[:,-1])
             
         char2idx = utils.char2idx(all_chars)
@@ -22,7 +22,7 @@ class Predictor():
         model = models.CRNN(imgH=64,nc=3, nh=256, nclass=len(char2idx))
         model_name = 'crnn_3_channels'
 
-        model.load_state_dict(torch.load(f'../{model_name}.pth', map_location=torch.device('cpu')))
+        model.load_state_dict(torch.load(f'../save_models/{model_name}.pth', map_location=torch.device('cpu')))
 
         self.model = model
 
